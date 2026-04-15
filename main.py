@@ -39,23 +39,23 @@ init_db()
 Session = sessionmaker(bind=engine)
 session = Session()
 
+user = User(name="alice", email="alice@test.com")
 user2 = User(name="bob", email="bob@test.com")
 
+session.add_all([user, user2])
 
-user = User(name="alice", email="alice@test.com",)
+post1 = Post(content="Test123", author=user)
+post2 = Post(content="Test1", author=user)
+post3 = Post(content="Test123ded", author=user)
 
-post1 = Post(content="Test123", user_id=user.id)
-session.add(user)
-session.add(user2)
-session.add(post1)
-
+session.add_all([post1, post2, post3])
 
 session.commit()
 
 users = select(User.name).where(User.name.in_(["alice", "bob"]))
-for user in session.scalars(users):
-    print(user)
+for useri in session.scalars(users):
+    print(useri)
 
-posts = select(Post)
+posts = select(Post).where(Post.author == user)
 for post in session.scalars(posts):
     print(post.content)
